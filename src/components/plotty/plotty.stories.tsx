@@ -20,15 +20,22 @@ BarChart.args = {
             type: "bar",
             axis: 'primary',
             yField: 'Value',
-        }, {
-            type: "bar",
+            fill: 'grey',
+            border: 'red',
+            barWidth: 0.8
+        },
+        {
+            type: "line",
             axis: 'secondary',
             yField: 'Value',
-        }],
+            color: 'blue'
+        }
+    ],
         x: {
             field: 'Country',
             scale: 'discrete',
-            ticks: null
+            ticks: null,
+            tickLabelRotate: 0
         },
         y1: {
             ticks: 5
@@ -37,7 +44,7 @@ BarChart.args = {
             ticks: 10
         },
 
-        margin: {top: 50, bottom: 50, left: 50, right: 50},
+        margin: {top: 50, bottom: 70, left: 60, right: 70},
         height: 500,
         width: 1000,
         box: false,

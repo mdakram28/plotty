@@ -1,11 +1,35 @@
 
 export type DataRow = { [k: string]: number | string }
 
-export type RectProps = {
-    x: number, y: number,
-    width: number, height: number,
+export type RectsProps = {
     axis: 'primary' | 'secondary',
+    fill: string, border: string,
+    rects: {
+        x: number, y: number,
+        xOffset: number, yOffset: number,
+        width: number, height: number,
+    }[]
 }
+
+export type LineProps = {
+    axis: 'primary' | 'secondary'
+    color: string,
+    points: {
+        x: number, y: number,
+        xOffset: number, yOffset: number,
+    }[]
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 type PlotBase = {
@@ -15,10 +39,14 @@ type PlotBase = {
 
 export type PlotBar = {
     type: 'bar',
+    barWidth: number,
+    fill: string,
+    border: string
 } & PlotBase
 
 export type PlotLine = {
     type: 'line',
+    color: string,
 } & PlotBase
 
 export type PlottyConfig<T> = {
@@ -27,7 +55,8 @@ export type PlottyConfig<T> = {
     x: {
         field: string,
         scale: 'discrete' | 'linear',
-        ticks: number | null
+        ticks: number | null,
+        tickLabelRotate: number
     }
     y1: {
         ticks: number
