@@ -21,16 +21,23 @@ BarChart.args = {
             axis: 'primary',
             yField: 'Value',
             fill: 'grey',
-            border: 'red',
-            barWidth: 0.8
-        },
-        {
+            border: 'black',
+            barWidth: 0.8,
+            onHover: {
+                fill: "darkgrey",
+                border: 'black'
+            },
+            onSelect: {
+                fill: "darkgrey",
+                border: 'red',
+                cb: console.log
+            }
+        },{
             type: "line",
             axis: 'secondary',
             yField: 'Value',
             color: 'blue'
-        }
-    ],
+        }],
         x: {
             field: 'Country',
             scale: 'discrete',
@@ -44,7 +51,7 @@ BarChart.args = {
             ticks: 10
         },
 
-        margin: {top: 50, bottom: 70, left: 60, right: 70},
+        margin: { top: 50, bottom: 70, left: 60, right: 70 },
         height: 500,
         width: 1000,
         box: false,

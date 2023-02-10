@@ -15,7 +15,7 @@ export class Plotty<T extends DataRow> {
     public xScale: d3.ScaleBand<any> | d3.ScaleLinear<any, any>
     public y1Scale: d3.ScaleLinear<any, any>
     public y2Scale?: d3.ScaleLinear<any, any>
-    
+
 
     public constructor(svgRef: React.RefObject<SVGSVGElement>, data: T[], config: PlottyConfig<T>) {
         this.svgRef = svgRef
@@ -76,11 +76,11 @@ export class Plotty<T extends DataRow> {
         if (this.config.x.scale == 'linear') {
             const xValues = this.data.map(r => r[this.config.x.field as keyof T])
             const xScaleExtent = d3.extent(xValues as number[]) as [number, number]
-            const extendEnds = Math.abs(xScaleExtent[1] - xScaleExtent[0])*0.05
+            const extendEnds = Math.abs(xScaleExtent[1] - xScaleExtent[0]) * 0.05
             xScaleExtent[1] += extendEnds
             xScaleExtent[0] -= extendEnds
 
-            
+
 
             this.xScale = d3.scaleLinear()
                 .domain(xScaleExtent)
@@ -139,8 +139,8 @@ export class Plotty<T extends DataRow> {
         this.svg.append("g")
             .attr('id', 'yaxis1')
             .call(d3.axisLeft(this.y1Scale)
-            .ticks(this.config.y1.ticks))
-        
+                .ticks(this.config.y1.ticks))
+
         // @ts-ignore
         const axisBbox = this.svg.select('g#yaxis1').node().getBoundingClientRect()
 
@@ -167,14 +167,14 @@ export class Plotty<T extends DataRow> {
                 .call(d3.axisRight(this.y2Scale)
                     .ticks(this.config.y2.ticks));
 
-            
+
             // @ts-ignore
             const axisBbox2 = this.svg.select('g#yaxis2').node().getBoundingClientRect()
             this.svg.append("text")
                 .attr("class", "y label")
                 .attr("text-anchor", "middle")
                 .attr("x", -this.innerHeight / 2)
-                .attr("y", axisBbox2.width+this.innerWidth+15)
+                .attr("y", axisBbox2.width + this.innerWidth + 15)
                 .attr('transform', 'rotate(-90)')
                 .text('x')
                 .text(this.config.plots.filter(p => p.axis == 'secondary').map(p => p.yField).join(', '));
@@ -198,8 +198,8 @@ export class Plotty<T extends DataRow> {
 
     public getRunningDiff(vals: number[]): number[] {
         const diffs = []
-        for(let i=1; i<vals.length;i++) {
-            diffs.push(vals[i] - vals[i-1])
+        for (let i = 1; i < vals.length; i++) {
+            diffs.push(vals[i] - vals[i - 1])
         }
         return diffs
     }
@@ -209,7 +209,7 @@ export class Plotty<T extends DataRow> {
         const xScaleUnit = this.scaleUnit(this.xScale, this.config.x.scale);
         const yScaleUnit = this.scaleUnit(yScale, 'linear');
         // console.log(xScaleUnit)
-        this.clipArea.selectAll("rects")
+        return this.clipArea.selectAll("rects")
             .data(props.rects)
             .enter()
             .append("rect")
@@ -244,9 +244,9 @@ export class Plotty<T extends DataRow> {
 
 function PlottyBar<T extends DataRow>(plotty: Plotty<T>, data: T[], config: PlottyConfig<T>, plot: PlotBar) {
     const barWidth = config.x.scale == 'discrete' ? 1 : Math.min(...plotty.getRunningDiff(data.map(r => r[config.x.field] as number)))
-    let barOffset = (barWidth * (1 - plot.barWidth))/2
+    let barOffset = (barWidth * (1 - plot.barWidth)) / 2
     if (config.x.scale == 'linear') {
-        barOffset -= barWidth/2
+        barOffset -= barWidth / 2
     }
 
     const rects = data.map(r => ({
@@ -258,12 +258,55 @@ function PlottyBar<T extends DataRow>(plotty: Plotty<T>, data: T[], config: Plot
         height: r[plot.yField] as number,
     }))
 
-    plotty.drawRects({
+    const rectsSel = plotty.drawRects({
         axis: plot.axis,
         border: plot.border,
         fill: plot.fill,
         rects
     })
+
+    if (plot.onHover) {
+        rectsSel
+            .on('mouseover', ((d: T, i: number, nodes: any) => {
+                if (d3.select(nodes[i]).node().classList.contains('selected')) return
+                d3.select(nodes[i])
+                    .style("cursor", "pointer")
+                    .attr('fill', plot.onHover!.fill)
+                    .attr('stroke', plot.onHover!.border)
+            }) as any)
+            .on('mouseout', ((d: T, i: number, nodes: any) => {
+                if (d3.select(nodes[i]).node().classList.contains('selected')) return
+                d3.select(nodes[i])
+                    .style("cursor", "default")
+                    .attr('fill', plot.fill)
+                    .attr('stroke', plot.border)
+            }) as any)
+    }
+
+    if (plot.onSelect) {
+        rectsSel
+            .on('click', ((d: T, i: number, nodes: any) => {
+                const node = d3.select(nodes[i]).node()
+                node.classList.toggle('selected')
+                if (node.classList.contains('selected')) {
+                    d3.select('rect').each((d, i) => {
+                        
+                    })
+                    d3.select(nodes[i])
+                        .style("cursor", "pointer")
+                        .attr('fill', plot.onSelect!.fill)
+                        .attr('stroke', plot.onSelect!.border)
+                    // console.log(plot.onSelect!.cb)
+                    plot.onSelect!.cb(data[i])
+                } else {
+                    d3.select(nodes[i])
+                        .style("cursor", "pointer")
+                        .attr('fill', plot.fill)
+                        .attr('stroke', plot.border)
+                }
+            }) as any)
+    }
+
 }
 
 function PlottyLine<T extends DataRow>(plotty: Plotty<T>, data: T[], config: PlottyConfig<T>, plot: PlotLine) {

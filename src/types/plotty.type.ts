@@ -41,7 +41,16 @@ export type PlotBar = {
     type: 'bar',
     barWidth: number,
     fill: string,
-    border: string
+    border: string,
+    onHover?: {
+        fill: string,
+        border: string
+    },
+    onSelect?: {
+        fill: string,
+        border: string,
+        cb: (...args: any[]) => void
+    }
 } & PlotBase
 
 export type PlotLine = {

@@ -11,12 +11,14 @@
   }
   
   svg {
-    poiter-events: all;
-    .axis-grid line {
-      stroke: rgba(221, 238, 255, 0.5);
-    }
+    // poiter-events: all;
+    // .axis-grid line {
+    //   stroke: rgba(221, 238, 255, 0.5);
+    // }
 
     rect:hover {
-      border: 1px solid black
+    }
+    rect:hover {
+      // stroke-width: 5;
     }
   }
